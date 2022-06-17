@@ -22,14 +22,20 @@ def vis(img, boxes, scores, cls_ids, conf=0.5, class_names=None):
         y1 = int(box[3])
 
         color = (_COLORS[cls_id] * 255).astype(np.uint8).tolist()
-        text = '{}:{:.1f}%'.format(class_names[cls_id], score * 100)
-        txt_color = (0, 0, 0) if np.mean(_COLORS[cls_id]) > 0.5 else (255, 255, 255)
+        text = '{}'.format(class_names[cls_id])
+        txt_color = (0, 0, 0) if np.mean(_COLORS[cls_id]) > 0.5 else (0, 0, 255)
         font = cv2.FONT_HERSHEY_SIMPLEX
 
         txt_size = cv2.getTextSize(text, font, 0.4, 1)[0]
-        cv2.rectangle(img, (x0, y0), (x1, y1), color, 2)
+        #cv2.rectangle(img, (x0, y0), (x1, y1), color, 2)
+        cv2.rectangle(img, (x0, y0), (x1, y1), (0, 255, 0), 1)
 
         txt_bk_color = (_COLORS[cls_id] * 255 * 0.7).astype(np.uint8).tolist()
+        labelSize, baseLine = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+        y0 = max(y0, labelSize[1])
+        cv2.rectangle(img, (x0, y0 - labelSize[1]), (x0 +   labelSize[0], y0 + baseLine), (255, 255, 255), cv2.FILLED)
+        cv2.putText(img, text, (x0, y0), cv2.FONT_HERSHEY_SIMPLEX, 0.5, txt_color)
+        '''
         cv2.rectangle(
             img,
             (x0, y0 + 1),
@@ -38,6 +44,7 @@ def vis(img, boxes, scores, cls_ids, conf=0.5, class_names=None):
             -1
         )
         cv2.putText(img, text, (x0, y0 + txt_size[1]), font, 0.4, txt_color, thickness=1)
+        '''
 
     return img
 
@@ -123,6 +130,33 @@ _COLORS = np.array(
         0.857, 0.857, 0.857,
         0.000, 0.447, 0.741,
         0.314, 0.717, 0.741,
-        0.50, 0.5, 0
+        0.50, 0.5, 0,
+        0.667, 0.000, 1.000,
+        0.667, 0.333, 1.000,
+        0.667, 0.667, 1.000,
+        0.667, 1.000, 1.000,
+        1.000, 0.000, 1.000,
+        1.000, 0.333, 1.000,
+        1.000, 0.667, 1.000,
+        0.333, 0.000, 0.000,
+        0.500, 0.000, 0.000,
+        0.667, 0.000, 0.000,
+        0.833, 0.000, 0.000,
+        1.000, 0.000, 0.000,
+        0.000, 0.167, 0.000,
+        0.000, 0.333, 0.000,
+        0.000, 0.500, 0.000,
+        0.000, 0.667, 0.000,
+        0.000, 0.833, 0.000,
+        0.000, 1.000, 0.000,
+        0.000, 0.000, 0.167,
+        0.000, 0.000, 0.333,
+        0.000, 0.000, 0.500,
+        0.000, 0.000, 0.667,
+        0.000, 0.000, 0.833,
+        0.000, 0.000, 1.000,
+        0.000, 0.000, 0.000,
+        0.143, 0.143, 0.143,
+        0.286, 0.286, 0.286
     ]
 ).astype(np.float32).reshape(-1, 3)
