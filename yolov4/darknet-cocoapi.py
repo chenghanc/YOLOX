@@ -23,7 +23,8 @@ def per_class_AP_table(coco_eval, class_names=COCO_CLASSES, headers=["class", "A
     for idx, name in enumerate(class_names):
         # area range index 0: all area ranges
         # max dets index -1: typically 100 per image
-        precision = precisions[:, :, idx, 0, -1]
+        precision = precisions[:, :, idx, 0, -1] # AP@[ IoU=0.50:0.95 ]
+        #precision = precisions[0, :, idx, 0, -1] # AP@[ IoU=0.50 ]
         precision = precision[precision > -1]
         ap = np.mean(precision) if precision.size else float("nan")
         per_class_AP[name] = float(ap * 100)
