@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import itertools
 from tabulate import tabulate
 
+'''
 COCO_CLASSES = (
     "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
     "P", "Q", "R", "S", "T", "U", "W", "X", "Y", "Z",
@@ -12,6 +13,9 @@ COCO_CLASSES = (
     "cQ","cR","cS","cT","cU","cV","cW","cX","cY","cZ","cCN","cMO","cHK","h0", "h1","h2","h3","h4","h5","h6","h7","h8","h9","hA","hB",
     "hC","hD","hE","hF","hG","hH","hJ","hK","hL","hM","hN","hP","hR", "hS","hT","hU","hV","hW","hX","hY","hZ",
 )
+'''
+
+COCO_CLASSES = ('B', 'Y', 'W', 'R', 'AH', 'BH')
 
 def per_class_AP_table(coco_eval, class_names=COCO_CLASSES, headers=["class", "AP"], colums=6):
     per_class_AP = {}
@@ -60,6 +64,28 @@ def per_class_AR_table(coco_eval, class_names=COCO_CLASSES, headers=["class", "A
     )
     return table
 
+# Precision-Recall Curve
+def plot_pr_curve(x, all_precision, save_dir='pr_curve.png', names=()):
+
+    fig, ax = plt.subplots(1, 1, figsize=(9, 6), tight_layout=True) # tight_layout=False
+
+    if 0 < len(names) < 108:
+        for i, y in enumerate(all_precision.T):
+            ax.plot(x, y, linewidth=1, label=f'{names[i]} {all_precision[:,i].mean():.3f}')  # plot(recall, precision)
+    else:
+        ax.plot(x, all_precision, linewidth=1, color='grey')                                 # plot(recall, precision)
+
+    ax.plot(x, all_precision.mean(1), linewidth=3, color='blue', label='all classes %.3f mAP@0.50' % all_precision.mean())
+    ax.set_title('PR Curve: mAP@0.50 =  %.3f' % all_precision.mean())
+    ax.set_xlabel('Recall')
+    ax.set_ylabel('Precision')
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    plt.legend(bbox_to_anchor=(1.04, 1), loc="upper left")
+    fig.savefig(save_dir,dpi=250)
+    plt.show()
+    #plt.close()
+
 annType = 'bbox'
 
 anno_file = 'darknet_valid_gt_baby.json'
@@ -105,6 +131,14 @@ print(infoAR)
 #  counts     - [T,R,K,A,M] parameter dimensions
 #  precision  - [TxRxKxAxM] precision for every evaluation setting
 #  recall     - [TxKxAxM] max recall for every evaluation setting
+
+# Start of Precision-Recall Curve
+x = np.arange(0, 1.01, 0.01)
+all_precision = cocoEval.eval['precision'][0, :, :, 0, 2] # data for IoU@0.50
+save_dir='pr_curve.png'
+
+plot_pr_curve(x, all_precision, save_dir, COCO_CLASSES)
+# End of Precision-Recall Curve
 
 '''
 cocoEval.eval['counts']
