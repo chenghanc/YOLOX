@@ -88,8 +88,8 @@ def plot_pr_curve(x, all_precision, save_dir='pr_curve.png', names=()):
 
 annType = 'bbox'
 
-anno_file = 'darknet_valid_gt_baby.json'
-results_json = 'darknet_pred_baby.json'
+anno_file = 'darknet_valid_gt_baby2.json'
+results_json = 'darknet_pred_baby2.json'
 
 cocoGt=COCO(anno_file)
 cocoDt=cocoGt.loadRes(results_json)
